@@ -5,7 +5,8 @@ const { createClient } = require('@supabase/supabase-js');
 // Load secrets from server/.env first, then fall back to the repo-root .env.
 // Paths are based on this file's location, so it works no matter which folder you run `node` from.
 // dotenv never overwrites a variable that's already set, so server/.env wins if both files exist
-// (and real environment variables, like Heroku config vars, win over both).
+// (and real environment variables, like Render/Heroku settings, win over both).
+// If a file doesn't exist (e.g. on Render), dotenv just skips it - it doesn't throw.
 require('dotenv').config({ path: path.join(__dirname, '.env') });
 require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 
@@ -14,8 +15,12 @@ require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_SECRET_KEY = process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-if (!SUPABASE_URL || !SUPABASE_SECRET_KEY) {
-    console.error('Missing SUPABASE_URL or SUPABASE_SECRET_KEY. Copy .env.example to server/.env (or the repo root .env) and fill it in (or set Heroku config vars).');
+const missing = [];
+if (!SUPABASE_URL) missing.push('SUPABASE_URL (Supabase -> Project Settings -> Data API -> Project URL)');
+if (!SUPABASE_SECRET_KEY) missing.push('SUPABASE_SECRET_KEY (Supabase -> Project Settings -> API Keys -> Secret key, sb_secret_...)');
+if (missing.length) {
+    console.error('Missing required environment variable(s):\n  - ' + missing.join('\n  - '));
+    console.error('Locally: copy .env.example to server/.env and fill it in. On Render/Heroku: add them in the service\'s Environment settings.');
     process.exit(1);
 }
 
