@@ -257,7 +257,7 @@ const emailPattern = /@(spelman\.edu|morehouse\.edu)$/;
 
 ## 6. Create your `.env` file
 
-The server reads secrets from a file called `.env` in the **repo root** (next to `package.json`). It's listed in `.gitignore`, so git won't commit it.
+The server reads secrets from a file called `.env` in the **repo root** (next to `package.json`). It also checks `server/.env` first, so you can keep the file there instead if you prefer (`cp .env.example server/.env`). Both locations are listed in `.gitignore`, so git won't commit them.
 
 ```bash
 cp .env.example .env

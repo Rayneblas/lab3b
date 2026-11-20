@@ -1,0 +1,16 @@
+# Render Blueprint: one web service that runs the Express server and serves the built React app.
+# On Render: New + -> Blueprint -> pick this repo. Render reads this file.
+services:
+  - type: web
+    name: registration-app
+    runtime: node
+    plan: free
+    # Root install gives the server its packages (express, supabase, dotenv); then build the React app into client/build.
+    buildCommand: npm install && npm install --prefix client && npm run build --prefix client
+    startCommand: npm start
+    envVars:
+      # sync: false = Render asks you to paste these values when you create the service (they're never stored in git).
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SECRET_KEY
+        sync: false

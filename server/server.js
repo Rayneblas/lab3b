@@ -2,7 +2,12 @@
 const express = require('express');
 const path = require('path');
 const { createClient } = require('@supabase/supabase-js');
-require('dotenv').config();
+// Load secrets from server/.env first, then fall back to the repo-root .env.
+// Paths are based on this file's location, so it works no matter which folder you run `node` from.
+// dotenv never overwrites a variable that's already set, so server/.env wins if both files exist
+// (and real environment variables, like Heroku config vars, win over both).
+require('dotenv').config({ path: path.join(__dirname, '.env') });
+require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 
 // Supabase now issues "secret" keys (sb_secret_...) in place of the legacy service_role key.
 // Either one works here; the legacy name is kept as a fallback for older projects.
@@ -10,7 +15,7 @@ const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_SECRET_KEY = process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 if (!SUPABASE_URL || !SUPABASE_SECRET_KEY) {
-    console.error('Missing SUPABASE_URL or SUPABASE_SECRET_KEY. Copy .env.example to .env and fill it in (or set Heroku config vars).');
+    console.error('Missing SUPABASE_URL or SUPABASE_SECRET_KEY. Copy .env.example to server/.env (or the repo root .env) and fill it in (or set Heroku config vars).');
     process.exit(1);
 }
 
